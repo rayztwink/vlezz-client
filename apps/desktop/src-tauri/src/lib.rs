@@ -1,8 +1,9 @@
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
-use tauri::State;
 use tauri::Manager;
+use tauri::State;
 
+use std::path::{Path, PathBuf};
 use std::process::Child;
 use std::sync::Mutex;
 
@@ -34,7 +35,7 @@ pub fn run() {
             token = data.trim().to_string();
         }
     }
-    
+
     if token.is_empty() {
         if let Ok(data) = std::fs::read_to_string(&local_token_file) {
             token = data.trim().to_string();
@@ -67,53 +68,12 @@ pub fn run() {
     let app = tauri::Builder::default()
         .manage(ApiToken(token.clone()))
         .invoke_handler(tauri::generate_handler![get_api_token])
-        .setup(|app| {
-            // Find and spawn sidecar automatically in production/development
-            #[cfg(target_os = "windows")]
-            let sidecar_name = "rayflowd-x86_64-pc-windows-msvc.exe";
-            #[cfg(target_os = "macos")]
-            let sidecar_name = if cfg!(target_arch = "aarch64") {
-                "rayflowd-aarch64-apple-darwin"
-            } else {
-                "rayflowd-x86_64-apple-darwin"
-            };
-            #[cfg(target_os = "linux")]
-            let sidecar_name = "rayflowd-x86_64-unknown-linux-gnu";
-
-            let mut sidecar_path = None;
-
-            // 1. Production Resource Directory (bundled asset path)
-            if let Ok(resource_dir) = app.path().resource_dir() {
-                let path = resource_dir.join("bin").join(sidecar_name);
-                if path.exists() {
-                    sidecar_path = Some(path);
-                }
-            }
-
-            // 2. Development Working Directory (e.g. running from root folder or desktop)
-            if sidecar_path.is_none() {
-                if let Ok(current_dir) = std::env::current_dir() {
-                    let path = current_dir.join("apps/desktop/src-tauri/bin").join(sidecar_name);
-                    if path.exists() {
-                        sidecar_path = Some(path);
-                    }
-                }
-            }
-
-            // 3. Dev Cargo Executable Relative Path (target/debug/ or target/release/)
-            if sidecar_path.is_none() {
-                if let Ok(exe_path) = std::env::current_exe() {
-                    if let Some(exe_dir) = exe_path.parent() {
-                        let path = exe_dir.join("../../../bin").join(sidecar_name);
-                        if path.exists() {
-                            sidecar_path = Some(path);
-                        }
-                    }
-                }
-            }
-
-            if let Some(path) = sidecar_path {
-                if let Ok(child) = std::process::Command::new(path).spawn() {
+        .setup(move |app| {
+            if let Some(path) = find_sidecar_path(app) {
+                if let Ok(child) = std::process::Command::new(path)
+                    .env("RAYFLOW_AUTH_TOKEN", &token)
+                    .spawn()
+                {
                     let mut lock = BACKEND_PROCESS.lock().unwrap();
                     *lock = Some(child);
                 }
@@ -146,3 +106,64 @@ fn get_config_dir() -> std::path::PathBuf {
     }
 }
 
+fn find_sidecar_path(app: &tauri::App) -> Option<PathBuf> {
+    let mut dirs: Vec<PathBuf> = Vec::new();
+
+    if let Ok(resource_dir) = app.path().resource_dir() {
+        dirs.push(resource_dir.clone());
+        dirs.push(resource_dir.join("bin"));
+    }
+
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            dirs.push(exe_dir.to_path_buf());
+            dirs.push(exe_dir.join("bin"));
+            dirs.push(exe_dir.join("../../../bin"));
+        }
+    }
+
+    if let Ok(current_dir) = std::env::current_dir() {
+        dirs.push(current_dir.join("apps/desktop/src-tauri/bin"));
+        dirs.push(current_dir.join("src-tauri/bin"));
+        dirs.push(current_dir.join("bin"));
+    }
+
+    for dir in dirs {
+        if let Some(path) = first_existing_sidecar(&dir) {
+            return Some(path);
+        }
+    }
+
+    None
+}
+
+fn first_existing_sidecar(dir: &Path) -> Option<PathBuf> {
+    for name in sidecar_file_names() {
+        let path = dir.join(name);
+        if path.exists() {
+            return Some(path);
+        }
+    }
+    None
+}
+
+fn sidecar_file_names() -> &'static [&'static str] {
+    #[cfg(target_os = "windows")]
+    {
+        &["rayflowd.exe", "rayflowd-x86_64-pc-windows-msvc.exe"]
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        if cfg!(target_arch = "aarch64") {
+            &["rayflowd", "rayflowd-aarch64-apple-darwin"]
+        } else {
+            &["rayflowd", "rayflowd-x86_64-apple-darwin"]
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        &["rayflowd", "rayflowd-x86_64-unknown-linux-gnu"]
+    }
+}

@@ -15,7 +15,7 @@ export const useSettingsStore = defineStore('settings', () => {
     loading.value = true
     error.value = null
     try {
-      settings.value = await rayflowApi.settings()
+      settings.value = await loadSettingsWithRetry()
       applyTheme(settings.value.theme)
       setLocale(settings.value.language)
     } catch (err) {
@@ -48,6 +48,29 @@ export const useSettingsStore = defineStore('settings', () => {
       error.value = errMsg
       throw err
     }
+  }
+
+  async function loadSettingsWithRetry() {
+    const attempts = 8
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      try {
+        return await rayflowApi.settings()
+      } catch (err) {
+        if (!isNetworkStartupError(err) || attempt === attempts - 1) {
+          throw err
+        }
+        await delay(250 * (attempt + 1))
+      }
+    }
+    return rayflowApi.settings()
+  }
+
+  function isNetworkStartupError(err: unknown) {
+    return err instanceof Error && err.message === 'Network Error'
+  }
+
+  function delay(ms: number) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms))
   }
 
   function applyTheme(theme: AppSettings['theme']) {

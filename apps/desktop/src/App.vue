@@ -27,9 +27,6 @@ const currentSection = computed(() => t(navItems.find((item) => item.to === rout
 
 onMounted(async () => {
   await settings.load()
-  if (settings.settings?.theme !== 'light') {
-    await settings.patch({ theme: 'light' })
-  }
 })
 </script>
 
