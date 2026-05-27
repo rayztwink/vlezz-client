@@ -3,36 +3,40 @@ package storage
 import (
 	"database/sql"
 	"fmt"
-	"os"
 	"path/filepath"
 	"sort"
+
+	"github.com/rayflow/rayflow-client/apps/backend/migrations"
 )
 
-func RunMigrations(db *sql.DB, dir string) error {
-	if dir == "" {
-		return fmt.Errorf("migrations directory is required")
-	}
+func RunMigrations(db *sql.DB, _ string) error {
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS schema_migrations (version TEXT PRIMARY KEY, applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`); err != nil {
 		return err
 	}
 
-	files, err := filepath.Glob(filepath.Join(dir, "*.sql"))
+	entries, err := migrations.FS.ReadDir(".")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read embedded migrations: %w", err)
+	}
+
+	var files []string
+	for _, entry := range entries {
+		if !entry.IsDir() && filepath.Ext(entry.Name()) == ".sql" {
+			files = append(files, entry.Name())
+		}
 	}
 	sort.Strings(files)
 
 	for _, file := range files {
-		version := filepath.Base(file)
 		var exists int
-		if err := db.QueryRow(`SELECT COUNT(1) FROM schema_migrations WHERE version = ?`, version).Scan(&exists); err != nil {
+		if err := db.QueryRow(`SELECT COUNT(1) FROM schema_migrations WHERE version = ?`, file).Scan(&exists); err != nil {
 			return err
 		}
 		if exists > 0 {
 			continue
 		}
 
-		content, err := os.ReadFile(file)
+		content, err := migrations.FS.ReadFile(file)
 		if err != nil {
 			return err
 		}
@@ -42,9 +46,9 @@ func RunMigrations(db *sql.DB, dir string) error {
 		}
 		if _, err := tx.Exec(string(content)); err != nil {
 			_ = tx.Rollback()
-			return fmt.Errorf("migration %s failed: %w", version, err)
+			return fmt.Errorf("migration %s failed: %w", file, err)
 		}
-		if _, err := tx.Exec(`INSERT INTO schema_migrations(version) VALUES (?)`, version); err != nil {
+		if _, err := tx.Exec(`INSERT INTO schema_migrations(version) VALUES (?)`, file); err != nil {
 			_ = tx.Rollback()
 			return err
 		}

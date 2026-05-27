@@ -68,27 +68,56 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![get_api_token])
         .setup(|app| {
             // Find and spawn sidecar automatically in production/development
-            if let Ok(resource_dir) = app.path().resource_dir() {
-                #[cfg(target_os = "windows")]
-                let sidecar_name = "rayflowd-x86_64-pc-windows-msvc.exe";
-                #[cfg(target_os = "macos")]
-                let sidecar_name = if cfg!(target_arch = "aarch64") {
-                    "rayflowd-aarch64-apple-darwin"
-                } else {
-                    "rayflowd-x86_64-apple-darwin"
-                };
-                #[cfg(target_os = "linux")]
-                let sidecar_name = "rayflowd-x86_64-unknown-linux-gnu";
+            #[cfg(target_os = "windows")]
+            let sidecar_name = "rayflowd-x86_64-pc-windows-msvc.exe";
+            #[cfg(target_os = "macos")]
+            let sidecar_name = if cfg!(target_arch = "aarch64") {
+                "rayflowd-aarch64-apple-darwin"
+            } else {
+                "rayflowd-x86_64-apple-darwin"
+            };
+            #[cfg(target_os = "linux")]
+            let sidecar_name = "rayflowd-x86_64-unknown-linux-gnu";
 
-                let sidecar_path = resource_dir.join("bin").join(sidecar_name);
-                if sidecar_path.exists() {
-                    if let Ok(child) = std::process::Command::new(sidecar_path)
-                        .spawn() {
-                        let mut lock = BACKEND_PROCESS.lock().unwrap();
-                        *lock = Some(child);
+            let mut sidecar_path = None;
+
+            // 1. Production Resource Directory (bundled asset path)
+            if let Ok(resource_dir) = app.path().resource_dir() {
+                let path = resource_dir.join("bin").join(sidecar_name);
+                if path.exists() {
+                    sidecar_path = Some(path);
+                }
+            }
+
+            // 2. Development Working Directory (e.g. running from root folder or desktop)
+            if sidecar_path.is_none() {
+                if let Ok(current_dir) = std::env::current_dir() {
+                    let path = current_dir.join("apps/desktop/src-tauri/bin").join(sidecar_name);
+                    if path.exists() {
+                        sidecar_path = Some(path);
                     }
                 }
             }
+
+            // 3. Dev Cargo Executable Relative Path (target/debug/ or target/release/)
+            if sidecar_path.is_none() {
+                if let Ok(exe_path) = std::env::current_exe() {
+                    if let Some(exe_dir) = exe_path.parent() {
+                        let path = exe_dir.join("../../../bin").join(sidecar_name);
+                        if path.exists() {
+                            sidecar_path = Some(path);
+                        }
+                    }
+                }
+            }
+
+            if let Some(path) = sidecar_path {
+                if let Ok(child) = std::process::Command::new(path).spawn() {
+                    let mut lock = BACKEND_PROCESS.lock().unwrap();
+                    *lock = Some(child);
+                }
+            }
+
             Ok(())
         })
         .build(tauri::generate_context!())
