@@ -5,7 +5,6 @@ package systemproxy
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"os/exec"
 	"runtime"
 	"strings"
