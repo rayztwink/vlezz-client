@@ -11,11 +11,28 @@ fn get_api_token(token: State<'_, ApiToken>) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let token: String = thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(32)
-        .map(char::from)
-        .collect();
+    let mut token = String::new();
+
+    // Dev/Prod check: Try to read existing token from file first so we sync with separately run backend
+    if let Ok(path) = std::env::current_dir() {
+        let dev_token_file = path.join("../backend/data/.auth_token");
+        let local_token_file = path.join("data/.auth_token");
+
+        if let Ok(data) = std::fs::read_to_string(&dev_token_file) {
+            token = data.trim().to_string();
+        } else if let Ok(data) = std::fs::read_to_string(&local_token_file) {
+            token = data.trim().to_string();
+        }
+    }
+
+    // If no existing token, generate a new one
+    if token.is_empty() || token.len() < 16 {
+        token = thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(32)
+            .map(char::from)
+            .collect();
+    }
 
     // Set environment variable for any spawned subprocesses
     std::env::set_var("RAYFLOW_AUTH_TOKEN", &token);

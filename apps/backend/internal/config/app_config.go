@@ -1,6 +1,8 @@
 package config
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -38,6 +40,11 @@ func LoadAppConfig() AppConfig {
 		tokenFile := filepath.Join(filepath.Dir(dbPath), ".auth_token")
 		if data, err := os.ReadFile(tokenFile); err == nil {
 			authToken = strings.TrimSpace(string(data))
+		} else {
+			// Automatically generate secure token if missing to prevent startup crash
+			authToken = generateSecureToken()
+			_ = os.MkdirAll(filepath.Dir(dbPath), 0755)
+			_ = os.WriteFile(tokenFile, []byte(authToken), 0600)
 		}
 	}
 
@@ -74,4 +81,12 @@ func envInt(key string, fallback int) int {
 		return fallback
 	}
 	return parsed
+}
+
+func generateSecureToken() string {
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		return "development_token_fallback_secure_12345"
+	}
+	return hex.EncodeToString(b)
 }
