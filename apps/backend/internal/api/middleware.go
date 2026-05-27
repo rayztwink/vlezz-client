@@ -65,7 +65,14 @@ func AuthToken(token string) func(http.Handler) http.Handler {
 func CORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin == "" || strings.HasPrefix(origin, "http://localhost:") || strings.HasPrefix(origin, "http://127.0.0.1:") || strings.HasPrefix(origin, "tauri://") {
+		if origin == "" ||
+			strings.HasPrefix(origin, "http://localhost:") ||
+			strings.HasPrefix(origin, "http://127.0.0.1:") ||
+			strings.HasPrefix(origin, "tauri://") ||
+			origin == "http://tauri.localhost" ||
+			origin == "https://tauri.localhost" ||
+			strings.HasPrefix(origin, "http://tauri.localhost:") ||
+			strings.HasPrefix(origin, "https://tauri.localhost:") {
 			if origin != "" {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
 			}
