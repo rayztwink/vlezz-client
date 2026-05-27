@@ -36,6 +36,12 @@ jobs:
           cache: npm
           cache-dependency-path: apps/desktop/package-lock.json
 
+      - name: Install Desktop Dependencies
+        run: |
+          cd apps/desktop
+          npm ci
+        shell: bash
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
