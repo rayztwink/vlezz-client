@@ -1,6 +1,7 @@
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use tauri::State;
+use tauri::Manager;
 
 use std::process::Child;
 use std::sync::Mutex;
