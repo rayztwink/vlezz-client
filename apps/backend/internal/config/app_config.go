@@ -33,17 +33,18 @@ func (c AppConfig) Validate() error {
 }
 
 func LoadAppConfig() AppConfig {
-	dbPath := env("RAYFLOW_DB_PATH", "data/rayflow.db")
+	dataDir := getDataDir()
+	dbPath := env("RAYFLOW_DB_PATH", filepath.Join(dataDir, "rayflow.db"))
+	
 	authToken := os.Getenv("RAYFLOW_AUTH_TOKEN")
 	if authToken == "" {
-		// Fallback: Try to read from local file data/.auth_token in development/production
-		tokenFile := filepath.Join(filepath.Dir(dbPath), ".auth_token")
+		tokenFile := filepath.Join(dataDir, ".auth_token")
 		if data, err := os.ReadFile(tokenFile); err == nil {
 			authToken = strings.TrimSpace(string(data))
 		} else {
 			// Automatically generate secure token if missing to prevent startup crash
 			authToken = generateSecureToken()
-			_ = os.MkdirAll(filepath.Dir(dbPath), 0755)
+			_ = os.MkdirAll(dataDir, 0755)
 			_ = os.WriteFile(tokenFile, []byte(authToken), 0600)
 		}
 	}
@@ -89,4 +90,14 @@ func generateSecureToken() string {
 		return "development_token_fallback_secure_12345"
 	}
 	return hex.EncodeToString(b)
+}
+
+func getDataDir() string {
+	if appData := os.Getenv("APPDATA"); appData != "" {
+		return filepath.Join(appData, "RayFlow")
+	}
+	if home := os.Getenv("HOME"); home != "" {
+		return filepath.Join(home, ".config", "RayFlow")
+	}
+	return "data"
 }

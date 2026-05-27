@@ -14,13 +14,23 @@ pub fn run() {
     let mut token = String::new();
 
     // Dev/Prod check: Try to read existing token from file first so we sync with separately run backend
-    if let Ok(path) = std::env::current_dir() {
-        let dev_token_file = path.join("../backend/data/.auth_token");
-        let local_token_file = path.join("data/.auth_token");
+    let app_dir = get_config_dir();
+    let local_token_file = app_dir.join(".auth_token");
 
+    // Also support dev path check when running in the dev repo folder
+    let mut dev_token_file = std::path::PathBuf::new();
+    if let Ok(path) = std::env::current_dir() {
+        dev_token_file = path.join("../backend/data/.auth_token");
+    }
+
+    if !dev_token_file.as_os_str().is_empty() {
         if let Ok(data) = std::fs::read_to_string(&dev_token_file) {
             token = data.trim().to_string();
-        } else if let Ok(data) = std::fs::read_to_string(&local_token_file) {
+        }
+    }
+    
+    if token.is_empty() {
+        if let Ok(data) = std::fs::read_to_string(&local_token_file) {
             token = data.trim().to_string();
         }
     }
@@ -37,17 +47,15 @@ pub fn run() {
     // Set environment variable for any spawned subprocesses
     std::env::set_var("RAYFLOW_AUTH_TOKEN", &token);
 
-    // Save token to file for backend process reading (dev and prod fallbacks)
+    // Save token to all locations (development backend and production app configs)
+    let _ = std::fs::create_dir_all(&app_dir);
+    let _ = std::fs::write(local_token_file, &token);
+
     if let Ok(path) = std::env::current_dir() {
-        // Dev fallback: apps/backend/data
         let dev_dir = path.join("../backend/data");
         if dev_dir.exists() {
             let _ = std::fs::write(dev_dir.join(".auth_token"), &token);
         }
-        // Prod / Local fallback: data/
-        let local_dir = path.join("data");
-        let _ = std::fs::create_dir_all(&local_dir);
-        let _ = std::fs::write(local_dir.join(".auth_token"), &token);
     }
 
     tauri::Builder::default()
@@ -55,5 +63,15 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![get_api_token])
         .run(tauri::generate_context!())
         .expect("error while running RayFlow Client");
+}
+
+fn get_config_dir() -> std::path::PathBuf {
+    if let Ok(appdata) = std::env::var("APPDATA") {
+        std::path::PathBuf::from(appdata).join("RayFlow")
+    } else if let Ok(home) = std::env::var("HOME") {
+        std::path::PathBuf::from(home).join(".config").join("RayFlow")
+    } else {
+        std::path::PathBuf::from("data")
+    }
 }
 
