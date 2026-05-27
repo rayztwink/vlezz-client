@@ -2,6 +2,11 @@ use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use tauri::State;
 
+use std::process::Child;
+use std::sync::Mutex;
+
+static BACKEND_PROCESS: Mutex<Option<Child>> = Mutex::new(None);
+
 struct ApiToken(String);
 
 #[tauri::command]
@@ -58,11 +63,47 @@ pub fn run() {
         }
     }
 
-    tauri::Builder::default()
-        .manage(ApiToken(token))
+    let app = tauri::Builder::default()
+        .manage(ApiToken(token.clone()))
         .invoke_handler(tauri::generate_handler![get_api_token])
-        .run(tauri::generate_context!())
+        .setup(|app| {
+            // Find and spawn sidecar automatically in production/development
+            if let Ok(resource_dir) = app.path().resource_dir() {
+                #[cfg(target_os = "windows")]
+                let sidecar_name = "rayflowd-x86_64-pc-windows-msvc.exe";
+                #[cfg(target_os = "macos")]
+                let sidecar_name = if cfg!(target_arch = "aarch64") {
+                    "rayflowd-aarch64-apple-darwin"
+                } else {
+                    "rayflowd-x86_64-apple-darwin"
+                };
+                #[cfg(target_os = "linux")]
+                let sidecar_name = "rayflowd-x86_64-unknown-linux-gnu";
+
+                let sidecar_path = resource_dir.join("bin").join(sidecar_name);
+                if sidecar_path.exists() {
+                    if let Ok(child) = std::process::Command::new(sidecar_path)
+                        .spawn() {
+                        let mut lock = BACKEND_PROCESS.lock().unwrap();
+                        *lock = Some(child);
+                    }
+                }
+            }
+            Ok(())
+        })
+        .build(tauri::generate_context!())
         .expect("error while running RayFlow Client");
+
+    app.run(|_app_handle, event| match event {
+        tauri::RunEvent::Exit => {
+            // Clean up the backend process when the frontend window exits
+            let mut lock = BACKEND_PROCESS.lock().unwrap();
+            if let Some(mut child) = lock.take() {
+                let _ = child.kill();
+            }
+        }
+        _ => {}
+    });
 }
 
 fn get_config_dir() -> std::path::PathBuf {
