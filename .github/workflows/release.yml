@@ -48,14 +48,16 @@ jobs:
       - name: Build Go Sidecar (Windows & Linux)
         if: matrix.goarch != 'universal'
         run: |
-          go build -o apps/desktop/src-tauri/bin/${{ matrix.sidecar_name }} apps/backend/cmd/rayflowd/main.go
+          cd apps/backend
+          go build -o ../desktop/src-tauri/bin/${{ matrix.sidecar_name }} cmd/rayflowd/main.go
         shell: bash
 
       - name: Build Go Sidecars (macOS Universal)
         if: matrix.goarch == 'universal'
         run: |
-          GOOS=darwin GOARCH=amd64 go build -o apps/desktop/src-tauri/bin/rayflowd-x86_64-apple-darwin apps/backend/cmd/rayflowd/main.go
-          GOOS=darwin GOARCH=arm64 go build -o apps/desktop/src-tauri/bin/rayflowd-aarch64-apple-darwin apps/backend/cmd/rayflowd/main.go
+          cd apps/backend
+          GOOS=darwin GOARCH=amd64 go build -o ../desktop/src-tauri/bin/rayflowd-x86_64-apple-darwin cmd/rayflowd/main.go
+          GOOS=darwin GOARCH=arm64 go build -o ../desktop/src-tauri/bin/rayflowd-aarch64-apple-darwin cmd/rayflowd/main.go
         shell: bash
 
       - name: Install Rust Toolchain
