@@ -20,6 +20,7 @@
     "connect": "Connect",
     "connecting": "Connecting",
     "copy": "Copy",
+    "paste": "Paste",
     "delete": "Delete",
     "disconnect": "Disconnect",
     "import": "Import",

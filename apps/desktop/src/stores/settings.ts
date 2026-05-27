@@ -30,12 +30,23 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   async function patch(payload: Partial<AppSettings>) {
-    settings.value = await rayflowApi.patchSettings(payload)
-    if (settings.value?.theme) {
-      applyTheme(settings.value.theme)
-    }
-    if (settings.value?.language) {
-      setLocale(settings.value.language)
+    error.value = null
+    try {
+      settings.value = await rayflowApi.patchSettings(payload)
+      if (settings.value?.theme) {
+        applyTheme(settings.value.theme)
+      }
+      if (settings.value?.language) {
+        setLocale(settings.value.language)
+      }
+    } catch (err: any) {
+      console.error('Failed to patch settings:', err)
+      let errMsg = err instanceof Error ? err.message : 'Failed to update settings'
+      if (err?.response?.status === 401) {
+        errMsg = 'Unauthorized (401): Please restart the rayflowd backend process to sync tokens.'
+      }
+      error.value = errMsg
+      throw err
     }
   }
 

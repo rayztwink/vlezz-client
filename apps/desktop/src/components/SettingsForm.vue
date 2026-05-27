@@ -77,10 +77,37 @@ function saveCoreSettings() {
 
 async function validate(core: string, path: string) {
   validation.value[core] = { ok: false, message: t('settings.checking') }
-  const result = await rayflowApi.validateCore({ core, path: path.trim() })
-  validation.value[core] = {
-    ok: result.ok,
-    message: result.ok ? result.version || t('settings.validationPassed') : result.error || t('common.failed')
+  try {
+    const result = await rayflowApi.validateCore({ core, path: path.trim() })
+    validation.value[core] = {
+      ok: result.ok,
+      message: result.ok ? result.version || t('settings.validationPassed') : result.error || t('common.failed')
+    }
+  } catch (err: any) {
+    console.error('Validation failed:', err)
+    let errMsg = t('common.failed')
+    if (err?.response?.status === 401) {
+      errMsg = 'Unauthorized (401): Please restart the rayflowd backend process to sync authentication tokens.'
+    } else if (err?.response?.data?.error) {
+      errMsg = err.response.data.error
+    } else if (err?.message) {
+      errMsg = err.message
+    }
+    validation.value[core] = {
+      ok: false,
+      message: errMsg
+    }
+  }
+}
+
+async function pasteFromClipboard(field: 'singBoxPath' | 'xrayPath' | 'zapretPath') {
+  try {
+    const text = await navigator.clipboard.readText()
+    if (text) {
+      draft.value[field] = text.trim()
+    }
+  } catch (err) {
+    console.error('Failed to read clipboard', err)
   }
 }
 </script>
@@ -151,6 +178,7 @@ async function validate(core: string, path: string) {
           <span class="text-sm font-medium">{{ t('settings.singBoxPath') }}</span>
           <div class="grid gap-2 sm:flex">
             <input v-model="draft.singBoxPath" class="focus-ring min-w-0 flex-1 rounded-md border border-black/10 bg-white px-3 py-2 text-sm" placeholder="C:\\Tools\\sing-box\\sing-box.exe" />
+            <button class="focus-ring rounded-md border border-black/10 px-3 py-2 text-sm hover:bg-graphite-50" type="button" @click="pasteFromClipboard('singBoxPath')">{{ t('actions.paste') }}</button>
             <button class="focus-ring rounded-md border border-black/10 px-3 py-2 text-sm hover:bg-graphite-50" type="button" @click="validate('sing-box', draft.singBoxPath)">{{ t('actions.check') }}</button>
           </div>
         </label>
@@ -158,6 +186,7 @@ async function validate(core: string, path: string) {
           <span class="text-sm font-medium">{{ t('settings.xrayPath') }}</span>
           <div class="grid gap-2 sm:flex">
             <input v-model="draft.xrayPath" class="focus-ring min-w-0 flex-1 rounded-md border border-black/10 bg-white px-3 py-2 text-sm" placeholder="C:\\Tools\\xray\\xray.exe" />
+            <button class="focus-ring rounded-md border border-black/10 px-3 py-2 text-sm hover:bg-graphite-50" type="button" @click="pasteFromClipboard('xrayPath')">{{ t('actions.paste') }}</button>
             <button class="focus-ring rounded-md border border-black/10 px-3 py-2 text-sm hover:bg-graphite-50" type="button" @click="validate('xray', draft.xrayPath)">{{ t('actions.check') }}</button>
           </div>
         </label>
@@ -165,6 +194,7 @@ async function validate(core: string, path: string) {
           <span class="text-sm font-medium">{{ t('settings.zapretPath') }}</span>
           <div class="grid gap-2 sm:flex">
             <input v-model="draft.zapretPath" class="focus-ring min-w-0 flex-1 rounded-md border border-black/10 bg-white px-3 py-2 text-sm" placeholder="C:\\Tools\\zapret\\winws.exe" />
+            <button class="focus-ring rounded-md border border-black/10 px-3 py-2 text-sm hover:bg-graphite-50" type="button" @click="pasteFromClipboard('zapretPath')">{{ t('actions.paste') }}</button>
             <button class="focus-ring rounded-md border border-black/10 px-3 py-2 text-sm hover:bg-graphite-50" type="button" @click="validate('zapret', draft.zapretPath)">{{ t('actions.check') }}</button>
           </div>
         </label>
