@@ -1,0 +1,192 @@
+{
+  "app": {
+    "name": "RayFlow",
+    "legal": "The user is solely responsible for complying with the laws of their country.",
+    "api": "API",
+    "apiFull": "API 127.0.0.1:8787"
+  },
+  "nav": {
+    "client": "Client",
+    "zapret": "Zapret",
+    "routing": "Routing",
+    "checks": "Checks",
+    "settings": "Settings"
+  },
+  "actions": {
+    "add": "Add",
+    "cancel": "Cancel",
+    "check": "Check",
+    "checking": "Checking",
+    "connect": "Connect",
+    "connecting": "Connecting",
+    "copy": "Copy",
+    "delete": "Delete",
+    "disconnect": "Disconnect",
+    "import": "Import",
+    "run": "Run",
+    "save": "Save",
+    "start": "Start",
+    "stop": "Stop",
+    "update": "Update"
+  },
+  "common": {
+    "active": "active",
+    "disabled": "disabled",
+    "enabled": "enabled",
+    "external": "external",
+    "failed": "failed",
+    "loading": "Loading...",
+    "no": "no",
+    "off": "off",
+    "on": "on",
+    "unknown": "unknown",
+    "yes": "yes"
+  },
+  "modes": {
+    "direct": "Direct",
+    "proxy": "Proxy",
+    "zapret": "Zapret",
+    "localProxy": "Local proxy",
+    "systemProxy": "System proxy",
+    "tun": "TUN"
+  },
+  "client": {
+    "title": "VLESS Client",
+    "subtitle": "Choose a profile, press connect, and keep external Windows proxy state visible.",
+    "selectedProfile": "Selected profile",
+    "noProfile": "No profile",
+    "noProfileSelected": "No profile selected",
+    "network": "Network",
+    "core": "Core",
+    "profile": "Profile",
+    "selectProfile": "Select profile",
+    "localProxy": "Local proxy",
+    "windowsProxy": "Windows proxy",
+    "mode": "Mode",
+    "copyProxyAddress": "Copy proxy address",
+    "modeHints": {
+      "local_proxy": "Only apps configured manually for this proxy will use RayFlow. Windows proxy is not changed.",
+      "system_proxy": "RayFlow temporarily replaces Windows proxy settings and restores them on disconnect.",
+      "tun": "Routes traffic through sing-box TUN. Requires administrator privileges."
+    },
+    "externalProxyWarning": "External Windows proxy is active and will be restored after RayFlow disconnects.",
+    "systemProxyWarning": "RayFlow will temporarily replace Windows proxy settings.",
+    "tunWarning": "TUN requires administrator privileges and sing-box."
+  },
+  "ipCheck": {
+    "title": "IP Check",
+    "subtitle": "Check where traffic exits without leaving the app.",
+    "direct": "Direct IP",
+    "rayflow": "RayFlow IP",
+    "tun": "TUN route",
+    "windowsProxy": "Windows proxy",
+    "provider": "Provider",
+    "lastCheck": "Last check",
+    "notChecked": "Not checked yet",
+    "runAll": "Run checks",
+    "systemProxyOwned": "RayFlow",
+    "systemProxyExternal": "external",
+    "tunUnavailable": "TUN needs sing-box, enabled settings and admin privileges."
+  },
+  "profiles": {
+    "title": "Profiles",
+    "loading": "Loading profiles...",
+    "empty": "Import a VLESS profile to begin.",
+    "checkLatency": "Check latency"
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "addTitle": "Add Subscription",
+    "description": "HTTP/HTTPS subscriptions can contain VLESS links.",
+    "namePlaceholder": "Subscription name",
+    "urlPlaceholder": "https://example.com/subscription",
+    "add": "Add subscription",
+    "masked": "URLs are masked in the UI and logs.",
+    "empty": "No subscriptions yet.",
+    "updateTitle": "Update",
+    "result": "Imported {imported}, skipped {skipped}, failed {failed}."
+  },
+  "logs": {
+    "title": "Logs",
+    "connection": "Connection Logs",
+    "zapret": "Zapret Logs",
+    "empty": "No logs yet.",
+    "lines": "{count} lines"
+  },
+  "import": {
+    "title": "Import VLESS Link",
+    "description": "Reality, TCP, WS, gRPC and XHTTP params are normalized by the backend.",
+    "displayName": "Display name",
+    "optional": "Optional",
+    "vlessLink": "VLESS link"
+  },
+  "zapret": {
+    "title": "Zapret",
+    "subtitle": "Flowseal presets, explicit start/stop actions and readable process logs.",
+    "updatePresets": "Update presets",
+    "presets": "Flowseal Presets",
+    "presetsDescription": "Zapret presets are started only after explicit user action.",
+    "empty": "Update presets to add starter entries.",
+    "stopTitle": "Stop zapret",
+    "startTitle": "Start preset"
+  },
+  "routing": {
+    "title": "Routing",
+    "subtitle": "Domain rules for future Hybrid and Smart routing decisions.",
+    "rules": "Routing Rules",
+    "description": "Domain-level routing for Hybrid and Smart modes.",
+    "domainPlaceholder": "youtube.com",
+    "empty": "No routing rules configured.",
+    "enabled": "enabled: {value}"
+  },
+  "diagnostics": {
+    "title": "Diagnostics",
+    "subtitle": "Find whether the failure is DNS, TCP, HTTP, core config or route selection.",
+    "panelTitle": "Diagnostics",
+    "panelDescription": "DNS, TCP and HTTP checks with persistent history.",
+    "targetPlaceholder": "example.com:443",
+    "empty": "No checks yet."
+  },
+  "chart": {
+    "latency": "Latency",
+    "recent": "Recent diagnostic checks",
+    "checks": "{count} checks"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Local API, language, theme, core paths and safety defaults.",
+    "general": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "autostart": "Autostart",
+    "autostartDescription": "Start RayFlow with the system later via Tauri integration.",
+    "coreRuntime": "Core Runtime",
+    "coreDescription": "RayFlow does not bundle cores in the MVP. Configure absolute binary paths explicitly.",
+    "defaultCore": "Default core",
+    "localProxyPort": "Local mixed proxy port",
+    "defaultNetworkMode": "Default network mode",
+    "singBoxPath": "sing-box path",
+    "xrayPath": "xray-core path",
+    "zapretPath": "zapret path",
+    "tunMode": "TUN Mode",
+    "tunDescription": "TUN is a full-system route powered by sing-box and requires administrator privileges.",
+    "tunStatus": "Runtime: {platform}, admin: {admin}, system proxy: {systemProxy}",
+    "enableTun": "Enable TUN option",
+    "stack": "Stack",
+    "autoRoute": "Auto route",
+    "strictRoute": "Strict route",
+    "saveCore": "Save core settings",
+    "validationPassed": "Validation passed",
+    "checking": "Checking...",
+    "themeOptions": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "languageOptions": {
+      "system": "System",
+      "ru": "Русский",
+      "en": "English"
+    }
+  }
+}

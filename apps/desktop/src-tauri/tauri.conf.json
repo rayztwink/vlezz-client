@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "RayFlow Client",
+  "version": "0.1.0",
+  "identifier": "dev.rayflow.client",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "RayFlow Client",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 960,
+        "minHeight": 640
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' http://127.0.0.1:8787; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self';"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [],
+    "externalBin": [
+      "bin/rayflowd"
+    ]
+  }
+}
+

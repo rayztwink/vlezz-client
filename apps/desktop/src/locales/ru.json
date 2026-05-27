@@ -1,0 +1,192 @@
+{
+  "app": {
+    "name": "RayFlow",
+    "legal": "Пользователь сам несет ответственность за соблюдение законодательства своей страны.",
+    "api": "API",
+    "apiFull": "API 127.0.0.1:8787"
+  },
+  "nav": {
+    "client": "Клиент",
+    "zapret": "Zapret",
+    "routing": "Маршруты",
+    "checks": "Проверки",
+    "settings": "Настройки"
+  },
+  "actions": {
+    "add": "Добавить",
+    "cancel": "Отмена",
+    "check": "Проверить",
+    "checking": "Проверка",
+    "connect": "Подключить",
+    "connecting": "Подключение",
+    "copy": "Копировать",
+    "delete": "Удалить",
+    "disconnect": "Отключить",
+    "import": "Импорт",
+    "run": "Запустить",
+    "save": "Сохранить",
+    "start": "Старт",
+    "stop": "Стоп",
+    "update": "Обновить"
+  },
+  "common": {
+    "active": "активно",
+    "disabled": "выкл",
+    "enabled": "вкл",
+    "external": "внешний",
+    "failed": "ошибка",
+    "loading": "Загрузка...",
+    "no": "нет",
+    "off": "выкл",
+    "on": "вкл",
+    "unknown": "неизвестно",
+    "yes": "да"
+  },
+  "modes": {
+    "direct": "Direct",
+    "proxy": "Proxy",
+    "zapret": "Zapret",
+    "localProxy": "Local proxy",
+    "systemProxy": "System proxy",
+    "tun": "TUN"
+  },
+  "client": {
+    "title": "VLESS Client",
+    "subtitle": "Выберите профиль, нажмите подключение и держите статус внешнего Windows proxy на виду.",
+    "selectedProfile": "Выбранный профиль",
+    "noProfile": "Нет профиля",
+    "noProfileSelected": "Профиль не выбран",
+    "network": "Сеть",
+    "core": "Ядро",
+    "profile": "Профиль",
+    "selectProfile": "Выберите профиль",
+    "localProxy": "Local proxy",
+    "windowsProxy": "Windows proxy",
+    "mode": "Режим",
+    "copyProxyAddress": "Скопировать адрес прокси",
+    "modeHints": {
+      "local_proxy": "Через RayFlow пойдут только приложения, где этот прокси задан вручную. Windows proxy не меняется.",
+      "system_proxy": "RayFlow временно заменит настройки Windows proxy и восстановит их при отключении.",
+      "tun": "Трафик маршрутизируется через sing-box TUN. Нужны права администратора."
+    },
+    "externalProxyWarning": "Активен внешний Windows proxy. RayFlow восстановит его после отключения.",
+    "systemProxyWarning": "RayFlow временно заменит настройки Windows proxy.",
+    "tunWarning": "Для TUN нужны права администратора и sing-box."
+  },
+  "ipCheck": {
+    "title": "IP Check",
+    "subtitle": "Проверьте внешний IP прямо в приложении.",
+    "direct": "Direct IP",
+    "rayflow": "RayFlow IP",
+    "tun": "TUN route",
+    "windowsProxy": "Windows proxy",
+    "provider": "Провайдер",
+    "lastCheck": "Последняя проверка",
+    "notChecked": "Еще не проверялось",
+    "runAll": "Проверить",
+    "systemProxyOwned": "RayFlow",
+    "systemProxyExternal": "внешний",
+    "tunUnavailable": "Для TUN нужны sing-box, включенная настройка и права администратора."
+  },
+  "profiles": {
+    "title": "Профили",
+    "loading": "Загрузка профилей...",
+    "empty": "Импортируйте VLESS-профиль, чтобы начать.",
+    "checkLatency": "Проверить задержку"
+  },
+  "subscriptions": {
+    "title": "Подписки",
+    "addTitle": "Добавить подписку",
+    "description": "HTTP/HTTPS подписки могут содержать VLESS-ссылки.",
+    "namePlaceholder": "Название подписки",
+    "urlPlaceholder": "https://example.com/subscription",
+    "add": "Добавить подписку",
+    "masked": "URL скрываются в интерфейсе и логах.",
+    "empty": "Подписок пока нет.",
+    "updateTitle": "Обновить",
+    "result": "Импортировано {imported}, пропущено {skipped}, ошибок {failed}."
+  },
+  "logs": {
+    "title": "Логи",
+    "connection": "Логи подключения",
+    "zapret": "Логи Zapret",
+    "empty": "Логов пока нет.",
+    "lines": "{count} строк"
+  },
+  "import": {
+    "title": "Импорт VLESS-ссылки",
+    "description": "Reality, TCP, WS, gRPC и XHTTP параметры нормализуются backend-ом.",
+    "displayName": "Название",
+    "optional": "Необязательно",
+    "vlessLink": "VLESS-ссылка"
+  },
+  "zapret": {
+    "title": "Zapret",
+    "subtitle": "Flowseal-пресеты, явные действия start/stop и читаемые логи процесса.",
+    "updatePresets": "Обновить пресеты",
+    "presets": "Flowseal-пресеты",
+    "presetsDescription": "Пресеты Zapret запускаются только после явного действия пользователя.",
+    "empty": "Обновите пресеты, чтобы добавить стартовые записи.",
+    "stopTitle": "Остановить zapret",
+    "startTitle": "Запустить пресет"
+  },
+  "routing": {
+    "title": "Маршруты",
+    "subtitle": "Доменные правила для будущих Hybrid и Smart решений.",
+    "rules": "Правила маршрутизации",
+    "description": "Маршрутизация доменов для Hybrid и Smart режимов.",
+    "domainPlaceholder": "youtube.com",
+    "empty": "Правила маршрутизации не настроены.",
+    "enabled": "включено: {value}"
+  },
+  "diagnostics": {
+    "title": "Проверки",
+    "subtitle": "Понять, где сбой: DNS, TCP, HTTP, конфиг ядра или выбор маршрута.",
+    "panelTitle": "Диагностика",
+    "panelDescription": "DNS, TCP и HTTP проверки с сохранением истории.",
+    "targetPlaceholder": "example.com:443",
+    "empty": "Проверок пока нет."
+  },
+  "chart": {
+    "latency": "Задержка",
+    "recent": "Последние диагностические проверки",
+    "checks": "{count} проверок"
+  },
+  "settings": {
+    "title": "Настройки",
+    "subtitle": "Локальный API, язык, тема, пути к ядрам и безопасные значения по умолчанию.",
+    "general": "Настройки",
+    "theme": "Тема",
+    "language": "Язык",
+    "autostart": "Автозапуск",
+    "autostartDescription": "Позже запуск RayFlow вместе с системой через Tauri integration.",
+    "coreRuntime": "Core Runtime",
+    "coreDescription": "RayFlow не поставляет ядра в MVP. Укажите абсолютные пути к бинарникам.",
+    "defaultCore": "Ядро по умолчанию",
+    "localProxyPort": "Порт локального mixed proxy",
+    "defaultNetworkMode": "Режим сети по умолчанию",
+    "singBoxPath": "Путь к sing-box",
+    "xrayPath": "Путь к xray-core",
+    "zapretPath": "Путь к zapret",
+    "tunMode": "TUN Mode",
+    "tunDescription": "TUN — системный маршрут через sing-box. Нужны права администратора.",
+    "tunStatus": "Runtime: {platform}, admin: {admin}, system proxy: {systemProxy}",
+    "enableTun": "Включить TUN",
+    "stack": "Stack",
+    "autoRoute": "Auto route",
+    "strictRoute": "Strict route",
+    "saveCore": "Сохранить настройки ядра",
+    "validationPassed": "Проверка пройдена",
+    "checking": "Проверка...",
+    "themeOptions": {
+      "system": "Системная",
+      "light": "Светлая",
+      "dark": "Темная"
+    },
+    "languageOptions": {
+      "system": "Системный",
+      "ru": "Русский",
+      "en": "English"
+    }
+  }
+}

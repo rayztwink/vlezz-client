@@ -1,0 +1,21 @@
+services:
+  rayflowd:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    environment:
+      RAYFLOW_HTTP_ADDR: 0.0.0.0:8787
+      RAYFLOW_DB_PATH: data/rayflow.db
+      RAYFLOW_MIGRATIONS_DIR: migrations
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - rayflowd-data:/app/data
+      - rayflowd-configs:/app/configs
+      - rayflowd-logs:/app/logs
+
+volumes:
+  rayflowd-data:
+  rayflowd-configs:
+  rayflowd-logs:
+
