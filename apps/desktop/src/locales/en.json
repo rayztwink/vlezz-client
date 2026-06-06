@@ -188,6 +188,20 @@
       "system": "System",
       "ru": "Русский",
       "en": "English"
+    },
+    "updater": {
+      "title": "Software Update",
+      "description": "Check and install newer versions of RayFlow Client.",
+      "currentVersion": "Current version",
+      "newVersion": "New version available",
+      "checking": "Checking for updates...",
+      "upToDate": "Up to date",
+      "releaseNotes": "Release Notes",
+      "checkButton": "Check for Updates",
+      "downloadAndInstall": "Download & Install",
+      "relaunch": "Relaunch Now",
+      "downloading": "Downloading update...",
+      "installing": "Installing update..."
     }
   }
 }

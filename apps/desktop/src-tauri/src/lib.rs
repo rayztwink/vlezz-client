@@ -16,6 +16,11 @@ fn get_api_token(token: State<'_, ApiToken>) -> String {
     token.0.clone()
 }
 
+#[tauri::command]
+fn relaunch(app_handle: tauri::AppHandle) {
+    app_handle.restart();
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let mut token = String::new();
@@ -66,8 +71,9 @@ pub fn run() {
     }
 
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(ApiToken(token.clone()))
-        .invoke_handler(tauri::generate_handler![get_api_token])
+        .invoke_handler(tauri::generate_handler![get_api_token, relaunch])
         .setup(move |app| {
             if let Some(path) = find_sidecar_path(app) {
                 if let Ok(child) = std::process::Command::new(path)

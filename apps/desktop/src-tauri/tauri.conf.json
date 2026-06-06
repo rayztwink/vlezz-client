@@ -36,6 +36,14 @@
     "externalBin": [
       "bin/rayflowd"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://raw.githubusercontent.com/rayztwink/vlezz-client/main/updater.json"
+      ],
+      "pubkey": "dW51c2VkX3BsYWNlaG9sZGVyX2tleV9mb3JfZGV2ZWxvcG1lbnQ="
+    }
   }
 }
 

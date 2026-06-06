@@ -33,3 +33,10 @@ apps/desktop/data/
 .env
 .env.*
 !.env.example
+
+# Agents & Teamwork Specs
+.agents/
+agents/
+ORIGINAL_REQUEST.md
+PROJECT.md
+TEST_READY.md
